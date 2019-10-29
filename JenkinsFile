@@ -2,13 +2,13 @@
 import groovy.json.JsonOutput
 
 //git env vars
-env.git_url = 'https://user@bitbucket.org/user/terraform-ci.git'
+env.git_url = 'https://prashanthmanohar@github.com/prashanthmanohar/MongoDB.git'
 env.git_branch = 'master'
-env.credentials_id = '1'
+env.credentials_id = ''
 
 //jenkins env vars
-env.jenkins_server_url = 'https://52.79.46.98'
-env.jenkins_node_custom_workspace_path = "/opt/bitnami/apps/jenkins/jenkins_home/${JOB_NAME}/workspace"
+env.jenkins_server_url = 'http://localhost:8081'
+env.jenkins_node_custom_workspace_path = "/opt/bitnami/apps/jenkins/jenkins_home/mongo/workspace"
 env.jenkins_node_label = 'master'
 env.terraform_version = '0.11.10'
 
