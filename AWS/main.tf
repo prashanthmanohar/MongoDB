@@ -110,10 +110,12 @@ resource "aws_db_instance" "db_mongo_instance" {
 #  engine_version = "${var.engine_version}"
 #}
 
+#Using User data
+
 resource "aws_instance" "mongo_db_ec2" {
-  ami            = "${data.aws_ami.ubuntu.id}"
-  instance_type  = "t2.micro"
-  user_data      = <<-EOF
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.micro"
+  user_data     = <<-EOF
                 #!/bin/bash
                 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
 				echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
@@ -127,5 +129,23 @@ resource "aws_instance" "mongo_db_ec2" {
   }
 }
 
+#Using provisioner
+
+resource "aws_instance" "testMongoInstance" {
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.micro"
+  #vpc_security_group_ids = ["${aws_security_group.private_db_sg.id}"]
+  #key_name = "${aws_key_pair.ec2key.key_name}"
+  provisioner "local-exec" {
+    command = <<EOH
+        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+		echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.4.list
+		#"read -p "MongoDB Version:  " mongo",
+		sudo apt-get install -y mongodb-org=$$engine_version
+		#sudo apt-get install -y mongodb-org=3.4 mongodb-org-server=3.4 mongodb-org-shell=3.4 mongodb-org-mongos=3.4 mongodb-org-tools=3.4
+		sudo service mongodb start
+	EOH
+  }
+}
 
  
