@@ -19,12 +19,12 @@ pipeline {
         }
         stage('terraform init') {
             steps {
-                sh 'sudo /home/ec2-user/terraform init ./jenkins'
+                sh 'sudo /home/I354986/terraform init ../environments/terraform.tfvars'
             }
         }
         stage('terraform plan') {
             steps {
-                sh 'ls ./jenkins; sudo /home/ec2-user/terraform plan ./jenkins'
+                sh 'sudo /home/I354986/terraform plan ../environments/terraform.tfvars'
             }
         }
 	stage('approve') {
@@ -34,7 +34,7 @@ pipeline {
 	}
 	stage('apply_changes') {
 	     steps {
-		sh "echo 'yes' | sudo terraform apply $jenkins_node_custom_workspace_path/workspace"
+		sh "echo 'yes' | udo /home/I354986/terraform apply ../environments/terraform.tfvars"
 		("Deployment logs from jenkins server $jenkins_server_url/jenkins/job/$JOB_NAME/$BUILD_NUMBER/console", notification_channel, [])
 	    }
 	}
