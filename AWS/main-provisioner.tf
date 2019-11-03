@@ -49,9 +49,10 @@ resource "aws_instance" "EC2"{
     provisioner "remote-exec" {
       inline = [
         "sudo yum install -y docker",
+        "sudo usermod -a -G docker ec2-user",
         "sudo service docker start",
-        "docker pull mongo",
-        "docker run --name some-mongo -d mongo:latest"
+        "sudo docker pull mongo",
+        "sudo docker run --name some-mongo -d mongo:latest"
         #"echo 'name=MongoDB Repository' | sudo tee /etc/yum.repos.d/mongodb-org-3.0.repo",
         #"echo 'baseurl=https://repo.mongodb.org/yum/amazon/2013.03/mongodb-org/3.0/x86_64/' | sudo tee /etc/yum.repos.d/mongodb-org-3.0.repo",
         #"echo 'gpgcheck=0' | sudo tee /etc/yum.repos.d/mongodb-org-3.0.repo",
