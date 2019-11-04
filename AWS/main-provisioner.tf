@@ -18,7 +18,7 @@ resource "aws_security_group" "private_db_sg" {
   ingress {
     from_port = "27017"
     to_port   = "27017"
-    protocol  = "tcp"
+    protocol  = "-1"
   }
 
   ingress {
