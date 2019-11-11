@@ -53,7 +53,7 @@ resource "aws_instance" "EC2"{
         "sudo service docker start",
         "sudo docker pull mongo",
         "sudo docker run --name mongo -d mongo:latest",
-        "sudo docker exec -it mongo echo '0.0.0.0' >> /etc/mongod.conf.orig"
+        "sudo docker exec -it mongo-server /bin/bash echo '0.0.0.0' >> /etc/mongod.conf.orig"
 
 
         #"echo 'name=MongoDB Repository' | sudo tee /etc/yum.repos.d/mongodb-org-3.0.repo",
