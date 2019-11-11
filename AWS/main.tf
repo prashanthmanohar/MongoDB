@@ -43,7 +43,7 @@ resource "aws_security_group" "private_db_sg" {
 resource "aws_instance" "EC2"{
     ami = "ami-040c7ad0a93be494e"
     instance_type = "t2.micro"
-    key_name = "provkeypair"
+    key_name = "keypair"
     vpc_security_group_ids = ["${aws_security_group.private_db_sg.id}"]
 
     provisioner "remote-exec" {
@@ -53,7 +53,7 @@ resource "aws_instance" "EC2"{
         "sudo service docker start",
         "sudo docker pull mongo",
         "sudo docker run --name mongo -d mongo:latest",
-        "sudo docker exec -it mongo mongo"
+        "sudo docker exec -it mongo echo '0.0.0.0' >> /etc/mongod.conf.orig"
 
 
         #"echo 'name=MongoDB Repository' | sudo tee /etc/yum.repos.d/mongodb-org-3.0.repo",
@@ -69,7 +69,7 @@ resource "aws_instance" "EC2"{
      connection {
        type = "ssh"
        user = "ec2-user"
-       private_key = file("./provkeypair.pem")
+       private_key = file("./keypair.pem")
        host = self.public_ip
      }
   }
