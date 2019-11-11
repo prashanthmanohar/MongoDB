@@ -1,68 +1,42 @@
-###Jenkinsfile###
-import groovy.json.JsonOutput
-
-//git env vars
-env.git_url = 'https://prashanthmanohar@github.com/prashanthmanohar/MongoDB.git'
-env.git_branch = 'master'
-env.credentials_id = ''
-
-//jenkins env vars
-env.jenkins_server_url = 'http://localhost:8081'
-env.jenkins_node_custom_workspace_path = "/opt/bitnami/apps/jenkins/jenkins_home/mongo/workspace"
-env.jenkins_node_label = 'master'
-env.terraform_version = '0.11.10'
-
 pipeline {
-	agent {
-		node {
-			customWorkspace "$jenkins_node_custom_workspace_path"
-			label "$jenkins_node_label"
-		} 
+    agent {
+        node {
+            label 'master'
+        }
+    }
+
+    stages {
+
+        stage('terraform started') {
+            steps {
+                sh 'echo "Started...!" '
+            }
+        }
+        stage('git clone') {
+            steps {
+                sh 'sudo rm -r *;sudo git clone https://github.com/prasahnthmanohar/MongoDB.git'
+            }
+        }
+        stage('terraform init') {
+            steps {
+                sh 'sudo /home/I354986/terraform init ../environments/terraform.tfvars'
+            }
+        }
+        stage('terraform plan') {
+            steps {
+                sh 'sudo /home/I354986/terraform plan ../environments/terraform.tfvars'
+            }
+        }
+	stage('approve') {
+	     steps {
+		input 'Do you approve deployment?'
+	    }
 	}
-
-stages {
-	stage('fetch_latest_code') {
-		steps {
-			git branch: "$git_branch" ,
-			credentialsId: "$credentials_id" ,
-			url: "$git_url"
-		}
-	}
-
-stage('install_deps') {
-	steps {
-		sh "sudo apt install wget zip python-pip -y"
-		sh "cd /tmp"
-		sh "curl -o terraform.zip https://releases.hashicorp.com/terraform/'$terraform_version'/terraform_'$terraform_version'_linux_amd64.zip"
-		sh "unzip terraform.zip"
-		sh "sudo mv terraform /usr/bin"
-		sh "rm -rf terraform.zip"
-	}
-}
-
-stage('init_and_plan') {
-	steps {
-		sh "sudo terraform init $jenkins_node_custom_workspace_path/workspace"
-		sh "sudo terraform plan $jenkins_node_custom_workspace_path/workspace"
-	}
-}
-
-stage('approve') {
-steps {
-	notifySlack("Do you approve deployment? $jenkins_server_url/jenkins/job/$JOB_NAME", notification_channel, [])
-	input 'Do you approve deployment?'
-}
-}
-
-stage('apply_changes') {
-	steps {
-		sh "echo 'yes' | sudo terraform apply $jenkins_node_custom_workspace_path/workspace"
+	stage('apply_changes') {
+	     steps {
+		sh "echo 'yes' | udo /home/I354986/terraform apply ../environments/terraform.tfvars"
 		("Deployment logs from jenkins server $jenkins_server_url/jenkins/job/$JOB_NAME/$BUILD_NUMBER/console", notification_channel, [])
+	    }
 	}
-	}
-}
-post { 
-  always { 
-    cleanWs()
    }
-  }
+}
